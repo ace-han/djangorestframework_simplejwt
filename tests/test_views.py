@@ -1,8 +1,9 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
+
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.state import User
 from rest_framework_simplejwt.tokens import (
     AccessToken, RefreshToken, SlidingToken,
 )
@@ -20,7 +21,7 @@ class TestTokenObtainPairView(APIViewTestCase):
         self.username = 'test_user'
         self.password = 'test_password'
 
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=self.username,
             password=self.password,
         )
@@ -28,20 +29,20 @@ class TestTokenObtainPairView(APIViewTestCase):
     def test_fields_missing(self):
         res = self.view_post(data={})
         self.assertEqual(res.status_code, 400)
-        self.assertIn(User.USERNAME_FIELD, res.data)
+        self.assertIn(get_user_model().USERNAME_FIELD, res.data)
         self.assertIn('password', res.data)
 
-        res = self.view_post(data={User.USERNAME_FIELD: self.username})
+        res = self.view_post(data={get_user_model().USERNAME_FIELD: self.username})
         self.assertEqual(res.status_code, 400)
         self.assertIn('password', res.data)
 
         res = self.view_post(data={'password': self.password})
         self.assertEqual(res.status_code, 400)
-        self.assertIn(User.USERNAME_FIELD, res.data)
+        self.assertIn(get_user_model().USERNAME_FIELD, res.data)
 
     def test_credentials_wrong(self):
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': 'test_user',
         })
         self.assertEqual(res.status_code, 401)
@@ -52,7 +53,7 @@ class TestTokenObtainPairView(APIViewTestCase):
         self.user.save()
 
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': self.password,
         })
         self.assertEqual(res.status_code, 401)
@@ -60,7 +61,7 @@ class TestTokenObtainPairView(APIViewTestCase):
 
     def test_success(self):
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': self.password,
         })
         self.assertEqual(res.status_code, 200)
@@ -69,7 +70,7 @@ class TestTokenObtainPairView(APIViewTestCase):
 
         with override_api_settings(AUTH_COOKIE='authorization'):
             res = self.view_post(data={
-                User.USERNAME_FIELD: self.username,
+                get_user_model().USERNAME_FIELD: self.username,
                 'password': self.password,
             })
             self.assertEqual(res.status_code, 200)
@@ -84,7 +85,7 @@ class TestTokenRefreshView(APIViewTestCase):
         self.username = 'test_user'
         self.password = 'test_password'
 
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=self.username,
             password=self.password,
         )
@@ -135,7 +136,7 @@ class TestTokenObtainSlidingView(APIViewTestCase):
         self.username = 'test_user'
         self.password = 'test_password'
 
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=self.username,
             password=self.password,
         )
@@ -143,20 +144,20 @@ class TestTokenObtainSlidingView(APIViewTestCase):
     def test_fields_missing(self):
         res = self.view_post(data={})
         self.assertEqual(res.status_code, 400)
-        self.assertIn(User.USERNAME_FIELD, res.data)
+        self.assertIn(get_user_model().USERNAME_FIELD, res.data)
         self.assertIn('password', res.data)
 
-        res = self.view_post(data={User.USERNAME_FIELD: self.username})
+        res = self.view_post(data={get_user_model().USERNAME_FIELD: self.username})
         self.assertEqual(res.status_code, 400)
         self.assertIn('password', res.data)
 
         res = self.view_post(data={'password': self.password})
         self.assertEqual(res.status_code, 400)
-        self.assertIn(User.USERNAME_FIELD, res.data)
+        self.assertIn(get_user_model().USERNAME_FIELD, res.data)
 
     def test_credentials_wrong(self):
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': 'test_user',
         })
         self.assertEqual(res.status_code, 401)
@@ -167,7 +168,7 @@ class TestTokenObtainSlidingView(APIViewTestCase):
         self.user.save()
 
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': self.password,
         })
         self.assertEqual(res.status_code, 401)
@@ -175,7 +176,7 @@ class TestTokenObtainSlidingView(APIViewTestCase):
 
     def test_success(self):
         res = self.view_post(data={
-            User.USERNAME_FIELD: self.username,
+            get_user_model().USERNAME_FIELD: self.username,
             'password': self.password,
         })
         self.assertEqual(res.status_code, 200)
@@ -183,7 +184,7 @@ class TestTokenObtainSlidingView(APIViewTestCase):
 
         with override_api_settings(AUTH_COOKIE='authorization'):
             res = self.view_post(data={
-                User.USERNAME_FIELD: self.username,
+                get_user_model().USERNAME_FIELD: self.username,
                 'password': self.password,
             })
             self.assertEqual(res.status_code, 200)
@@ -197,7 +198,7 @@ class TestTokenRefreshSlidingView(APIViewTestCase):
         self.username = 'test_user'
         self.password = 'test_password'
 
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=self.username,
             password=self.password,
         )
@@ -262,7 +263,7 @@ class TestTokenVerifyView(APIViewTestCase):
         self.username = 'test_user'
         self.password = 'test_password'
 
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=self.username,
             password=self.password,
         )
