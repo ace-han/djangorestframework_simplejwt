@@ -1,3 +1,6 @@
+Archive version of https://github.com/ace-han/cishe/issues/48 's djangorestframework_simplejwt. No more update!!!
+==========
+
 Simple JWT
 ==========
 
